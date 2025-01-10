@@ -5,3 +5,4 @@ const roomSchema = new mongoose.Schema({
     reservedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, 
     reservationReason: { type: String, default: '' },
 });
+module.exports = mongoose.model('Rooms', roomSchema);

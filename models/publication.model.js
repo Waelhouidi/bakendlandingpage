@@ -5,10 +5,10 @@ const postSchema = new mongoose.Schema({
     desc: { type: String, required: true },
     image: { type: String, default: 'avatar.png' },
     date: { type: Date, default: Date.now }, 
-    userShared: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // Reference to User model
+    userShared: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, 
     content: { type: String, required: true },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true }, // Reference to Admin model
-    publishedAt: { type: Date, default: null }, // Null if not published yet
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true }, 
+    publishedAt: { type: Date, default: null }, 
 });
 
 module.exports = mongoose.model('Post', postSchema);
