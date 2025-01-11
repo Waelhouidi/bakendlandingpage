@@ -20,10 +20,12 @@ exports.createPost = async (req, res) => {
 
 // Get all posts
 exports.getAllPosts = async (req, res) => {
-    try {
+    try { 
         const posts = await Post.find().populate('author').populate('userShared');
         res.status(200).json(posts);
     } catch (error) {
+        console.error('Error fetching posts:', error); // Logs the error to the console
+
         res.status(500).json({ message: "Error fetching posts", error });
     }
 };
