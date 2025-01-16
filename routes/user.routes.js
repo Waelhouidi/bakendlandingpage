@@ -1,6 +1,7 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
 const router = express.Router();
+const verifyRole = require('../models/Middleware/auth');
 const multer = require('multer');
 const myStorage =multer.diskStorage({
     destination:'../public',
@@ -11,12 +12,17 @@ const myStorage =multer.diskStorage({
     }
 
 })
+
+
+
 //midllerwaire 
 const upload =multer({storage:myStorage});  
 // User routes
 router.post('/register', userController.register);
-router.post('/login', userController.login);
+router.post('/login',userController.login);
 router.get('/user/:id', userController.getUserById);
+router.delete('/user/:id',verifyRole('admin'), userController.deleteUser);
 router.put('/user/:id',upload.single('image'), userController.edit);
+
 
 module.exports = router;

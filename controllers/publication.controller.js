@@ -1,4 +1,5 @@
 const Post = require('../models/publication.model');
+const admin=require('../models/admin.model');
 
 // Create a new post
 exports.createPost = async (req, res) => {
