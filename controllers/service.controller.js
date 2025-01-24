@@ -2,9 +2,9 @@ const Service = require('../models/service.model');
 
 // Create a new service
 exports.createService = async (req, res) => {
-    const { nameservice, title, desc, Image, Imagesponsor } = req.body;
+    const { nameservice, title, desc, Image, Imagesponsor ,tags} = req.body;
     try {
-        const service = new Service({ nameservice, title, desc, Image, Imagesponsor });
+        const service = new Service({ nameservice, title, desc, Image, Imagesponsor,tags });
         const savedService = await service.save();
         res.status(201).json({ message: "Service created successfully", service: savedService });
     } catch (error) {

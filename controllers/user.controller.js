@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// register
+// Register user
 exports.register = async (req, res) => {
     const { username, email, password, role } = req.body;
 
@@ -26,8 +26,7 @@ exports.register = async (req, res) => {
     }
 };
 
-
-// login
+// Login user
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -47,12 +46,19 @@ exports.login = async (req, res) => {
         // Generate a JWT token, including the user's role
         const token = jwt.sign({ id: user._id, role: user.role }, '123456789', { expiresIn: '1h' });
 
+        // Store user information in the session
+        req.session.user = {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+        };
+
         res.status(200).json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
@@ -95,7 +101,8 @@ exports.edit = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
+
 // Delete user by ID
 exports.deleteUser = async (req, res) => {
     const { id } = req.params;
@@ -113,4 +120,24 @@ exports.deleteUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};;
+};
+
+// Logout user
+exports.logout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Could not log out, please try again" });
+        }
+        res.clearCookie('connect.sid'); // Clear the session cookie
+        res.status(200).json({ message: "Logged out successfully" });
+    });
+};
+
+// Get current user
+exports.getCurrentUser = (req, res) => {
+    if (req.session.user) {
+        res.status(200).json(req.session.user);
+    } else {
+        res.status(401).json({ message: "Not logged in" });
+    }
+};

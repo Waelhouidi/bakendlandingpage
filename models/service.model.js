@@ -5,6 +5,7 @@ const serviceSchema = new mongoose.Schema({
     title: String,
     desc: String,
     Image:{type : String, default :'avatar.png'},
-    Imagesponsor:{type : String, default :'avatar.png'}
+    Imagesponsor:{type : String, default :'avatar.png'},
+    tags:[String]
 })
 module.exports = mongoose.model('Service', serviceSchema);
