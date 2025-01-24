@@ -4,6 +4,7 @@ const postSchema = new mongoose.Schema({
     title: { type: String, required: true },
     desc: { type: String, required: true },
     image: { type: String, default: 'avatar.png' },
+    imagePublication: { type: String, default:'wael.png' },
     date: { type: Date, default: Date.now }, 
     userShared: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, 
     content: { type: String, required: true },
