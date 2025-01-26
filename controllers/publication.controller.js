@@ -1,5 +1,7 @@
 const Post = require('../models/publication.model');
 const admin=require('../models/admin.model');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 // Create a new post
 exports.createPost = async (req, res) => {
@@ -73,55 +75,67 @@ exports.deletePost = async (req, res) => {
 };
 
 exports.toggleLike = async (req, res) => {
-    const { postId, userId } = req.body;
-
-    console.log("Received request to toggle like:", { postId, userId }); // Log the request payload
-
     try {
-        const post = await Post.findById(postId);
-        if (!post) {
-            console.log("Post not found:", postId); // Log if post is not found
-            return res.status(404).json({ message: "Post not found" });
-        }
-
-        console.log("Post found:", post); // Log the found post
-
-        const likeIndex = post.likes.indexOf(userId);
-        if (likeIndex === -1) {
-            post.likes.push(userId); // Like the post
-            console.log("User liked the post:", userId); // Log the like action
-        } else {
-            post.likes.splice(likeIndex, 1); // Unlike the post
-            console.log("User unliked the post:", userId); // Log the unlike action
-        }
-
-        await post.save();
-        console.log("Post saved successfully:", post); // Log the updated post
-        res.status(200).json({ message: "Like toggled successfully", post });
+      const { postId, userId } = req.body;
+  
+      if (!ObjectId.isValid(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+  
+      const post = await Post.findById(postId);
+  
+      if (!post) {
+        console.log("Post not found:", postId);
+        return res.status(404).json({ message: "Post not found" });
+      }
+  
+      const userIndex = post.likes.indexOf(userId);
+  
+      if (userIndex === -1) {
+        post.likes.push(userId);
+      } else {
+        post.likes.splice(userIndex, 1);
+      }
+  
+      await post.save();
+      console.log("Like toggled successfully:", post);
+      res.status(200).json({ message: "Like toggled successfully", post });
     } catch (error) {
-        console.error("Error toggling like:", error); // Log the error
-        res.status(500).json({ message: "Error toggling like", error: error.message });
+      console.error("Error toggling like:", error);
+      res.status(500).json({ message: "Error toggling like", error: error.message });
     }
-};
-// Add a comment to a post
-exports.addComment = async (req, res) => {
+  };
+  
+  // Add a comment to a post
+  exports.addComment = async (req, res) => {
     const { postId, userId, text } = req.body;
-
+  
+    console.log("Received request to add comment:", { postId, userId, text });
+  
     try {
-        const post = await Post.findById(postId);
-        if (!post) {
-            return res.status(404).json({ message: "Post not found" });
-        }
-
-        const newComment = {
-            user: userId,
-            text: text
-        };
-
-        post.comments.push(newComment);
-        await post.save();
-        res.status(200).json({ message: "Comment added successfully", post });
+      const post = await Post.findById(postId);
+      if (!post) {
+        console.log("Post not found:", postId);
+        return res.status(404).json({ message: "Post not found" });
+      }
+  
+      console.log("Post found:", post);
+  
+      // Add the new comment
+      const newComment = {
+        user: userId,
+        text: text,
+      };
+  
+      post.comments.push(newComment);
+      await post.save();
+      console.log("Comment added successfully:", newComment);
+      res.status(200).json({ message: "Comment added successfully", post });
     } catch (error) {
-        res.status(500).json({ message: "Error adding comment", error });
+      console.error("Error adding comment:", error);
+      res.status(500).json({ message: "Error adding comment", error: error.message });
     }
-};
+  };
+  
+  
+;
