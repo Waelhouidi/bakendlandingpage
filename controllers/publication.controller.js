@@ -75,67 +75,74 @@ exports.deletePost = async (req, res) => {
 };
 
 exports.toggleLike = async (req, res) => {
-    try {
-      const { postId, userId } = req.body;
-  
-      if (!ObjectId.isValid(postId)) {
-        return res.status(400).json({ message: "Invalid post ID" });
-      }
-  
-      const post = await Post.findById(postId);
-  
-      if (!post) {
-        console.log("Post not found:", postId);
-        return res.status(404).json({ message: "Post not found" });
-      }
-  
-      const userIndex = post.likes.indexOf(userId);
-  
-      if (userIndex === -1) {
-        post.likes.push(userId);
-      } else {
-        post.likes.splice(userIndex, 1);
-      }
-  
-      await post.save();
-      console.log("Like toggled successfully:", post);
-      res.status(200).json({ message: "Like toggled successfully", post });
-    } catch (error) {
-      console.error("Error toggling like:", error);
-      res.status(500).json({ message: "Error toggling like", error: error.message });
+  const { postId, userId } = req.body;
+
+  // Ensure postId and userId are provided and valid ObjectIDs
+  if (!mongoose.Types.ObjectId.isValid(postId) || !mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid postId or userId format" });
+  }
+
+  try {
+    // Find the post by ID
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
-  };
-  
-  // Add a comment to a post
-  exports.addComment = async (req, res) => {
-    const { postId, userId, text } = req.body;
-  
-    console.log("Received request to add comment:", { postId, userId, text });
-  
-    try {
-      const post = await Post.findById(postId);
-      if (!post) {
-        console.log("Post not found:", postId);
-        return res.status(404).json({ message: "Post not found" });
-      }
-  
-      console.log("Post found:", post);
-  
-      // Add the new comment
-      const newComment = {
-        user: userId,
-        text: text,
-      };
-  
-      post.comments.push(newComment);
-      await post.save();
-      console.log("Comment added successfully:", newComment);
-      res.status(200).json({ message: "Comment added successfully", post });
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      res.status(500).json({ message: "Error adding comment", error: error.message });
+
+    // Check if the user already liked the post
+    const hasLiked = post.likes.some((id) => id.toString() === userId);
+
+    if (hasLiked) {
+      // If user already liked, remove their ID from the likes array
+      post.likes = post.likes.filter((id) => id.toString() !== userId);
+    } else {
+      // If user hasn't liked, add their ID to the likes array
+      post.likes.push(new ObjectId(userId));
     }
-  };
+
+    // Save the updated post
+    const updatedPost = await post.save();
+
+    res.status(200).json({
+      message: hasLiked ? "Like removed successfully" : "Post liked successfully",
+      post: {
+        ...updatedPost.toObject(),
+        likes: updatedPost.likes.map((id) => id.toString()), // Convert ObjectIDs to strings
+      },
+    });
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    res.status(500).json({ message: "Error toggling like", error: error.message });
+  }
+};
+
+
   
+exports.addComment = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { text, userId } = req.body;
+
+    if (!text || !userId) {
+      return res.status(400).json({ message: 'Text and userId are required' });
+    }
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const newComment = { text, userId, date: new Date() };
+    post.comments.push(newComment);
+
+    await post.save();
+    res.status(200).json({ message: 'Comment added successfully', comments: post.comments });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+
+
   
 ;

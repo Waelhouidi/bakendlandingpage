@@ -8,5 +8,5 @@ router.get('/:id', postController.getPostById);
 router.put('/:id', postController.updatePost);       
 router.delete('/:id', postController.deletePost);    
 router.post('/toggleLike', postController.toggleLike);
-router.post('/addComment', postController.addComment);
+router.post('/:postId/addComment', postController.addComment);
 module.exports = router;

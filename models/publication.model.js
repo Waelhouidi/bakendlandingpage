@@ -11,6 +11,7 @@ const postSchema = new mongoose.Schema({
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // User who commented
         text: { type: String, required: true }, // Comment text
         date: { type: Date, default: Date.now } // Comment date
+        
     }],
     date: { type: Date, default: Date.now },
     image: { type: String, default: 'avatar.png' },
