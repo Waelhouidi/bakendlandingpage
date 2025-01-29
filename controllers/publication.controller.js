@@ -21,7 +21,6 @@ exports.createPost = async (req, res) => {
           title,
           desc,
           content,
-          author,
           imagePublication: imagePublication ? `uploads/${imagePublication}` : null,
       });
 

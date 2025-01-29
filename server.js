@@ -21,7 +21,7 @@ app.use(session({
 }));
 
 // Static file serving
-app.use('/uploads', (req, res, next) => {
+app.use('/uploads', (req, _res, next) => {
     console.log("Requested file:", req.url); // Logs the requested file path
     next();
 }, express.static('./public/uploads'));

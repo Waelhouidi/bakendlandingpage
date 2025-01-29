@@ -4,7 +4,7 @@ const postSchema = new mongoose.Schema({
     title: { type: String, required: true },
     desc: { type: String, required: true },
     content: { type: String, required: true },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required:false },
     userShared: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of user IDs who liked the post
     comments: [{
