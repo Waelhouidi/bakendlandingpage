@@ -19,11 +19,13 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // Session expiration time (e.g., 1 day)
     },
 }));
+app.use(cors({ origin: 'http://localhost:4200' }));
 
-// Static file serving
+// Serve static files from ./public/uploads
+app.use('/uploads', express.static('public/uploads'));
 app.use('/uploads', (req, _res, next) => {
-    console.log("Requested file:", req.url); // Logs the requested file path
-    next();
+  console.log("Requested file:", req.url); // Logs the requested file path
+  next();
 }, express.static('./public/uploads'));
 
 // Test route
