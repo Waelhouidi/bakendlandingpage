@@ -15,6 +15,7 @@ app.use(session({
       maxAge: 1000 * 60 * 60 * 24, // Session expiration time (e.g., 1 day)
     },
   }));
+app.use('/images', express.static('./public/uploads')); // Serve the 'uploads' folder
 
 app.get('req',(req,res)=>{res.send('server work ')})
 const userRoute = require('./routes/user.routes');

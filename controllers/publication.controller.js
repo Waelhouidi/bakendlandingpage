@@ -5,21 +5,39 @@ const ObjectId = mongoose.Types.ObjectId;
 
 // Create a new post
 exports.createPost = async (req, res) => {
-    const { title, desc, content, author, userShared } = req.body;
-    try {
-        const post = new Post({
-            title,
-            desc,
-            content,
-            author,
-            userShared,
-        });
-        const savedPost = await post.save();
-        res.status(201).json({ message: "Post created successfully", post: savedPost });
-    } catch (error) {
-        res.status(500).json({ message: "Error creating post", error });
-    }
+  try {
+
+      // Ensure all required fields are provided
+      const { title, desc, content, author } = req.body;
+      if (!title || !desc || !content || !author) {
+        return res.status(400).json({ message: 'All fields are required.' });
+      }
+
+      // Handle file upload for image
+      const imagePublication = req.file ? req.file.filename : null;
+
+      // Create a new post document
+      const post = new Post({
+          title,
+          desc,
+          content,
+          author,
+          imagePublication: imagePublication ? `uploads/${imagePublication}` : null,
+      });
+
+      // Save the post to the database
+      await post.save();
+
+      // Return the response
+      res.status(201).json({ message: 'Post created successfully', post });
+  } catch (error) {
+      console.error("Error creating post:", error);  // Log the error
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
 };
+
+
+
 
 // Get all posts
 exports.getAllPosts = async (req, res) => {
