@@ -1,7 +1,5 @@
 const multer = require('multer');
 const path = require('path');
-
-// Configure storage for uploaded files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, '../../public/uploads');
@@ -12,9 +10,6 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-
-
-// File filter to accept only images
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
@@ -22,8 +17,6 @@ const fileFilter = (req, file, cb) => {
     cb(new Error('Only images are allowed'), false);
   }
 };
-
-// Initialize multer with storage and file filter
 const upload = multer({ storage, fileFilter });
 
 module.exports = upload;
