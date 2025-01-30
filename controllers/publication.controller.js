@@ -8,8 +8,8 @@ exports.createPost = async (req, res) => {
   try {
 
       // Ensure all required fields are provided
-      const { title, desc, content, author } = req.body;
-      if (!title || !desc || !content || !author) {
+      const { title, desc, content} = req.body;
+      if (!title || !desc || !content ) {
         return res.status(400).json({ message: 'All fields are required.' });
       }
 

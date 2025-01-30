@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const session = require('express-session'); // Import express-session
+const multer = require('multer');
+const path = require('path');
 
 require('./config/connect');
 app.use(express.json());
@@ -20,11 +22,13 @@ app.use(session({
     },
 }));
 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-app.use('/uploads', (req, _res, next) => {
-  console.log("Requested file:", req.url); // Logs the requested file path
+// Debugging: Log file requests
+app.use('/uploads', (req, res, next) => {
+  console.log("Requested file:", req.url);
   next();
-}, express.static('./public/uploads'));
+});
 
 // Test route
 app.get('/', (req, res) => {
