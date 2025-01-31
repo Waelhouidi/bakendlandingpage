@@ -40,10 +40,12 @@ const userRoute = require('./routes/user.routes');
 const roomRoute = require('./routes/rooms.routes');
 const serviceRoute = require('./routes/service.routes');
 const postRoute = require('./routes/publication.routes');
+const catagoryRoute = require('./routes/catagory.routes');
 app.use('/users', userRoute);
 app.use('/rooms', roomRoute);
 app.use('/services', serviceRoute);
 app.use('/publication', postRoute);
+app.use('/catagory', catagoryRoute);
 
 // Start server
 app.listen(5000, () => {

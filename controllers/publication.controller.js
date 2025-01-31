@@ -1,5 +1,7 @@
 const Post = require('../models/publication.model');
 const admin=require('../models/admin.model');
+const Category = require('../models/catagory.model'); // Ensure you import Category if needed
+
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
