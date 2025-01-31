@@ -16,7 +16,8 @@ const postSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
     image: { type: String, default: '../public/avatar.png' },
     imagePublication: { type: String, default: "../public/avatar.png" },
-    publishedAt: { type: Date, default: null }
+    publishedAt: { type: Date, default: null },
+    imagesArray: { type: String},
 });
 
 module.exports = mongoose.model('Post', postSchema);
