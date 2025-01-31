@@ -5,40 +5,32 @@ const Category = require('../models/catagory.model'); // Ensure you import Categ
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
-// Create a new post
 exports.createPost = async (req, res) => {
   try {
-      const { title, desc, content, categoryId } = req.body;
+    const { title, desc, content, categoryId } = req.body;
 
-      if (!title || !desc || !content || !categoryId) {
-          return res.status(400).json({ message: 'All fields are required.' });
-      }
+    // Handle files
+    const imagePublication = req.files?.imagePublication?.[0]?.filename || null;
+    const imagesArray = req.files?.imagesArray?.map(file => `/uploads/${file.filename}`) || [];
 
-      // Check if category exists
-      const categoryExists = await Category.findById(categoryId);
-      if (!categoryExists) {
-          return res.status(400).json({ message: 'Invalid category ID.' });
-      }
+    // Create the post with the CORRECT FIELD NAME (imagesArray)
+    const post = new Post({
+      title,
+      desc,
+      content,
+      category: categoryId,
+      imagePublication: imagePublication ? `/uploads/${imagePublication}` : null,
+      imagesArray: imagesArray // Assign to imagesArray (not otherImages)
+    });
 
-      // Handle image upload
-      const imagePublication = req.file ? req.file.filename : null;
-
-      const post = new Post({
-          title,
-          desc,
-          content,
-          category: categoryId,  // Set category
-          imagePublication: imagePublication ? `uploads/${imagePublication}` : null,
-      });
-
-      await post.save();
-      res.status(201).json({ message: 'Post created successfully', post });
-
+    await post.save();
+    res.status(201).json({ message: 'Post created successfully', post });
   } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    console.error("Error creating post:", error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 };
+
 
 
 
