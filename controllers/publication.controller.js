@@ -9,7 +9,8 @@ exports.createPost = async (req, res) => {
   try {
     const { title, desc, content, categoryId } = req.body;
 
-    // Handle files
+    // Handle filedd
+    // s
     const imagePublication = req.files?.imagePublication?.[0]?.filename || null;
     const imagesArray = req.files?.imagesArray?.map(file => `/uploads/${file.filename}`) || [];
 
