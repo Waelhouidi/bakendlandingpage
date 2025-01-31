@@ -6,31 +6,34 @@ const ObjectId = mongoose.Types.ObjectId;
 // Create a new post
 exports.createPost = async (req, res) => {
   try {
+      const { title, desc, content, categoryId } = req.body;
 
-      // Ensure all required fields are provided
-      const { title, desc, content} = req.body;
-      if (!title || !desc || !content ) {
-        return res.status(400).json({ message: 'All fields are required.' });
+      if (!title || !desc || !content || !categoryId) {
+          return res.status(400).json({ message: 'All fields are required.' });
       }
 
-      // Handle file upload for image
+      // Check if category exists
+      const categoryExists = await Category.findById(categoryId);
+      if (!categoryExists) {
+          return res.status(400).json({ message: 'Invalid category ID.' });
+      }
+
+      // Handle image upload
       const imagePublication = req.file ? req.file.filename : null;
 
-      // Create a new post document
       const post = new Post({
           title,
           desc,
           content,
+          category: categoryId,  // Set category
           imagePublication: imagePublication ? `uploads/${imagePublication}` : null,
       });
 
-      // Save the post to the database
       await post.save();
-
-      // Return the response
       res.status(201).json({ message: 'Post created successfully', post });
+
   } catch (error) {
-      console.error("Error creating post:", error);  // Log the error
+      console.error("Error creating post:", error);
       res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 };
@@ -38,10 +41,11 @@ exports.createPost = async (req, res) => {
 
 
 
+
 // Get all posts
 exports.getAllPosts = async (req, res) => {
     try { 
-        const posts = await Post.find().populate('author').populate('userShared');
+        const posts = await Post.find().populate('author').populate('userShared').populate('category'); ;
         res.status(200).json(posts);
     } catch (error) {
         console.error('Error fetching posts:', error); // Logs the error to the console
@@ -64,20 +68,32 @@ exports.getPostById = async (req, res) => {
 
 // Update a post
 exports.updatePost = async (req, res) => {
-    const { id } = req.params;
-    const { title, desc, content, userShared } = req.body;
-    try {
-        const updatedPost = await Post.findByIdAndUpdate(
-            id,
-            { title, desc, content, userShared },
-            { new: true }
-        );
-        if (!updatedPost) return res.status(404).json({ message: "Post not found" });
-        res.status(200).json({ message: "Post updated successfully", post: updatedPost });
-    } catch (error) {
-        res.status(500).json({ message: "Error updating post", error });
-    }
+  const { id } = req.params;
+  const { title, desc, content, categoryId } = req.body;
+
+  try {
+      if (categoryId) {
+          const categoryExists = await Category.findById(categoryId);
+          if (!categoryExists) {
+              return res.status(400).json({ message: 'Invalid category ID.' });
+          }
+      }
+
+      const updatedPost = await Post.findByIdAndUpdate(
+          id,
+          { title, desc, content, category: categoryId },
+          { new: true }
+      );
+
+      if (!updatedPost) return res.status(404).json({ message: "Post not found" });
+
+      res.status(200).json({ message: "Post updated successfully", post: updatedPost });
+
+  } catch (error) {
+      res.status(500).json({ message: "Error updating post", error });
+  }
 };
+
 
 // Delete a post
 exports.deletePost = async (req, res) => {
