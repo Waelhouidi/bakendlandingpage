@@ -146,6 +146,7 @@ exports.toggleLike = async (req, res) => {
 
 
   
+// controllers/post.controller.js
 exports.addComment = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -163,8 +164,16 @@ exports.addComment = async (req, res) => {
     const newComment = { text, userId, date: new Date() };
     post.comments.push(newComment);
 
+    // Save the post with the new comment
     await post.save();
-    res.status(200).json({ message: 'Comment added successfully', comments: post.comments });
+
+    // Populate the comments with user details (e.g., username)
+    await post.populate('comments.userId', 'username'); // Only bring back the username
+
+    res.status(200).json({ 
+      message: 'Comment added successfully', 
+      comments: post.comments 
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -172,5 +181,6 @@ exports.addComment = async (req, res) => {
 
 
 
+
   
-;
+
