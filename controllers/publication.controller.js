@@ -146,7 +146,7 @@ exports.toggleLike = async (req, res) => {
 
 
   
-// controllers/post.controller.js
+/*/ controllers/post.controller.js
 exports.addComment = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -178,7 +178,7 @@ exports.addComment = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
+*/
 
 
 
