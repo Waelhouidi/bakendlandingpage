@@ -145,7 +145,22 @@ exports.toggleLike = async (req, res) => {
 };
 
 
-  
+  // posts.controller.js
+exports.getComments = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    
+    // Add validation
+    if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: 'Invalid post ID' });
+    }
+
+    const post = await Post.findById(postId).populate('comments.userId', 'username email');
+    // ... rest of the code
+  } catch (err) {
+    // ... error handling
+  }
+};
 /*/ controllers/post.controller.js
 exports.addComment = async (req, res) => {
   try {

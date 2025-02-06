@@ -29,6 +29,8 @@ exports.addComment = async (req, res) => {
 
 // Get All Comments for a Post
 exports.getComments = async (req, res) => {
+  console.log('Received request for postId:', req.params.postId); // Add this
+
   try {
     const { postId } = req.params;
     const post = await Post.findById(postId).populate('comments.userId', 'username email');
