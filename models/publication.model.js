@@ -8,10 +8,11 @@ const postSchema = new mongoose.Schema({
     userShared: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{
+        _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+        text: String,
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        text: { type: String, required: true }, 
-        date: { type: Date, default: Date.now } 
-    }],
+        date: { type: Date, default: Date.now }
+      }],
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }, 
     date: { type: Date, default: Date.now },
     image: { type: String, default: '../public/avatar.png' },
