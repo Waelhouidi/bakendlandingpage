@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
-  router.delete('/:id', authMiddleware, async (req, res) => {
+  router.delete('/:id', async (req, res) => {
     try {
       const message = await Message.findByIdAndDelete(req.params.id);
       
@@ -34,6 +34,26 @@ router.get('/', async (req, res) => {
       }
       
       res.status(200).json({ message: 'Message deleted successfully' });
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        return res.status(400).json({ error: 'Invalid message ID' });
+      }
+      res.status(500).json({ error: error.message });
+    }
+  });
+  router.patch('/:id/read', async (req, res) => {
+    try {
+      const message = await Message.findByIdAndUpdate(
+        req.params.id,
+        { status: 'read' },
+        { new: true, runValidators: true }
+      );
+  
+      if (!message) {
+        return res.status(404).json({ error: 'Message not found' });
+      }
+  
+      res.status(200).json(message);
     } catch (error) {
       if (error.kind === 'ObjectId') {
         return res.status(400).json({ error: 'Invalid message ID' });

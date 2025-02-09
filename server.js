@@ -10,8 +10,10 @@ require('./config/connect');
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:4200', // Allow requests from Angular app
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true // Allow cookies and credentials
+    methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+    credentials: true, // Allow cookies and credentials
+    allowedHeaders: ['Content-Type', 'Authorization']
+
 }));
 app.use(session({
     secret: 'your-secret-key', // Replace with a strong secret key
