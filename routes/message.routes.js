@@ -25,4 +25,20 @@ router.get('/', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
+  router.delete('/:id', authMiddleware, async (req, res) => {
+    try {
+      const message = await Message.findByIdAndDelete(req.params.id);
+      
+      if (!message) {
+        return res.status(404).json({ error: 'Message not found' });
+      }
+      
+      res.status(200).json({ message: 'Message deleted successfully' });
+    } catch (error) {
+      if (error.kind === 'ObjectId') {
+        return res.status(400).json({ error: 'Invalid message ID' });
+      }
+      res.status(500).json({ error: error.message });
+    }
+  });
 module.exports = router;
