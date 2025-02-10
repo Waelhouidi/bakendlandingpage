@@ -3,6 +3,8 @@ const userController = require('../controllers/user.controller');
 const router = express.Router();
 const verifyRole = require('../models/Middleware/auth');
 const session=require('../models/Middleware/session')
+const pagination = require('../models/Middleware/pagination');
+const { validateSession } = require('../models/Middleware/session');
 
 const multer = require('multer');
 const myStorage =multer.diskStorage({
@@ -16,7 +18,10 @@ const myStorage =multer.diskStorage({
 })
 
 
-
+router.get('/getall',
+    validateSession, // Add this first
+    userController.getAllUsers
+);
 //midllerwaire 
 const upload =multer({storage:myStorage});  
 // User routes

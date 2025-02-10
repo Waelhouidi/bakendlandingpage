@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         // Generate a JWT token, including the user's role
@@ -139,5 +139,28 @@ exports.getCurrentUser = (req, res) => {
         res.status(200).json(req.session.user);
     } else {
         res.status(401).json({ message: "Not logged in" });
+    }
+};
+// Add this to your user.controller.js
+exports.getAllUsers = async (req, res) => {
+    try {
+        // First verify session exists
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({ message: "Not authenticated" });
+        }
+
+        // Then verify user object structure
+        if (typeof req.session.user.role === 'undefined') {
+            return res.status(403).json({ message: "Invalid user session" });
+        }
+
+        // Finally check admin role
+        if (req.session.user.role !== 'admin') {
+            return res.status(403).json({ message: "Requires admin privileges" });
+        }
+
+        // Rest of your code...
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
