@@ -56,7 +56,6 @@ app.use('/catagory', catagoryRoute);
 app.use('/api', commentsRoute);
 app.use('/api/messages', messagesRoute);
 
-// Start server
 app.listen(5000, () => {
     console.log('Server is listening on port 5000');
 });
