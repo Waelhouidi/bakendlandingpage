@@ -42,14 +42,12 @@ app.get('/', (req, res) => {
 
 // Routes
 const userRoute = require('./routes/user.routes');
-const roomRoute = require('./routes/rooms.routes');
 const serviceRoute = require('./routes/service.routes');
 const postRoute = require('./routes/publication.routes');
 const catagoryRoute = require('./routes/catagory.routes');
 const commentsRoute = require('./routes/comments.routes');
 const messagesRoute = require('./routes/message.routes');
 app.use('/users', userRoute);
-app.use('/rooms', roomRoute);
 app.use('/services', serviceRoute);
 app.use('/publication', postRoute);
 app.use('/catagory', catagoryRoute);
