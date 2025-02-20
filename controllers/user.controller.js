@@ -142,24 +142,11 @@ exports.getCurrentUser = (req, res) => {
     }
 };
 // Add this to your user.controller.js
+// userController.js
 exports.getAllUsers = async (req, res) => {
     try {
-        // First verify session exists
-        if (!req.session || !req.session.user) {
-            return res.status(401).json({ message: "Not authenticated" });
-        }
-
-        // Then verify user object structure
-        if (typeof req.session.user.role === 'undefined') {
-            return res.status(403).json({ message: "Invalid user session" });
-        }
-
-        // Finally check admin role
-        if (req.session.user.role !== 'admin') {
-            return res.status(403).json({ message: "Requires admin privileges" });
-        }
-
-        // Rest of your code...
+        const users = await User.find().select('-password');
+        res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

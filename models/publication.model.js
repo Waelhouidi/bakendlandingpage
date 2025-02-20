@@ -15,8 +15,8 @@ const postSchema = new mongoose.Schema({
       }],
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }, 
     date: { type: Date, default: Date.now },
-    image: { type: String, default: '../public/avatar.png' },
-    imagePublication: { type: String, default: "../public/avatar.png" },
+    image: { type: String, default: '../public/uploads/1738171472893.png' },
+    imagePublication: { type: String, default: "../../../public/assets/avatar.png" },
     publishedAt: { type: Date, default: null },
     imagesArray: [{ type: String }] 
 });

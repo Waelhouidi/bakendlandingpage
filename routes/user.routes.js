@@ -19,7 +19,6 @@ const myStorage =multer.diskStorage({
 
 
 router.get('/getall',
-    validateSession, // Add this first
     userController.getAllUsers
 );
 //midllerwaire 
