@@ -72,4 +72,5 @@ const processImageFile = async (file) => {
   return `/uploads/${fileName}`;
 };
 
+
 module.exports = router;

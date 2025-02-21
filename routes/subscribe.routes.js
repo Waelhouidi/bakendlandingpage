@@ -13,8 +13,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Subscribe route
-router.post('', async (req, res) => {
+// Subscribe route (mounted at '/', adjust as needed)
+router.post('/', async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -24,8 +24,8 @@ router.post('', async (req, res) => {
 
     // Send welcome email
     const welcomeMailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
+      from: 'houidiwael68@gmail.com',
+      to: 'waelhwidi0@gmail.com',
       subject: 'Welcome to Our Blog!',
       html: `<h1>Thank you for subscribing!</h1>
              <p>You've successfully subscribed to our blog. Stay tuned for updates!</p>`,
@@ -43,54 +43,56 @@ router.post('', async (req, res) => {
 });
 
 // Notify subscribers about a new blog post
-router.post('/subscribe/notify', async (req, res) => {
-    try {
-      const { postTitle, postContent } = req.body;
-  
-      // Fetch all subscribers
-      const subscribers = await Subscriber.find({});
-  
-      // Send email to each subscriber
-      for (const subscriber of subscribers) {
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: subscriber.email,
-          subject: `New Blog Post: ${postTitle}`,
-          html: `<h1>${postTitle}</h1>
-                 <p>${postContent}</p>
-                 <p>Thank you for being a valued subscriber!</p>`,
-        };
-  
-        await transporter.sendMail(mailOptions);
-      }
-  
-      res.status(200).json({ message: 'Notifications sent successfully' });
-    } catch (error) {
-      console.error('Error sending notifications:', error);
-      res.status(500).json({ message: 'Failed to send notifications' });
-    }
-  });
-router.get('/subscribers', async (req, res) => {
-    try {
-      const subscribers = await Subscriber.find({});
-      res.status(200).json(subscribers);
-    } catch (error) {
-      console.error('Error fetching subscribers:', error);
-      res.status(500).json({ message: 'Failed to fetch subscribers' });
-    }
-  });
-  router.get('/test-email', async (req, res) => { // <-- GET route
-    try {
-      await transporter.sendMail({
+router.post('/notify', async (req, res) => {
+  try {
+    // Updated to match Angular's payload
+    const { title, content } = req.body;
+    const subscribers = await Subscriber.find({});
+
+    // Send emails concurrently
+    const emailPromises = subscribers.map((subscriber) => {
+      const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER, // Send to yourself
-        subject: 'Test Email',
-        text: 'This is a test email.',
-      });
-      res.send('Test email sent successfully!');
-    } catch (error) {
-      console.error('Test email error:', error);
-      res.status(500).send('Failed to send test email.');
-    }
-  });
+        to: subscriber.email,
+        subject: `New Blog Post: ${title}`,
+        html: `<h1>${title}</h1>
+               <p>${content}</p>
+               <p>Thank you for being a valued subscriber!</p>`,
+      };
+      return transporter.sendMail(mailOptions);
+    });
+
+    await Promise.all(emailPromises);
+    res.status(200).json({ message: 'Notifications sent successfully' });
+  } catch (error) {
+    console.error('Error sending notifications:', error);
+    res.status(500).json({ message: 'Failed to send notifications' });
+  }
+});
+
+router.get('/subscribers', async (req, res) => {
+  try {
+    const subscribers = await Subscriber.find({});
+    res.status(200).json(subscribers);
+  } catch (error) {
+    console.error('Error fetching subscribers:', error);
+    res.status(500).json({ message: 'Failed to fetch subscribers' });
+  }
+});
+
+router.get('/test-email', async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // Send to yourself
+      subject: 'Test Email',
+      text: 'This is a test email.',
+    });
+    res.send('Test email sent successfully!');
+  } catch (error) {
+    console.error('Test email error:', error);
+    res.status(500).send('Failed to send test email.');
+  }
+});
+
 module.exports = router;

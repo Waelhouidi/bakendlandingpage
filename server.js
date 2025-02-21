@@ -51,11 +51,16 @@ const subscribeRoute = require('./routes/subscribe.routes');
 app.use('/users', userRoute);
 app.use('/services', serviceRoute);
 app.use('/publication', postRoute);
+app.use('/subscription', subscribeRoute);
+console.log('EMAIL_USER:', process.env.EMAIL_USER);
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded' : 'Not Loaded');
 app.use('/catagory', catagoryRoute);
 app.use('/api', commentsRoute);
 app.use('/api/messages', messagesRoute);
-app.use('/publication', subscribeRoute);
 
 app.listen(5000, () => {
     console.log('Server is listening on port 5000');
+    console.log('EMAIL_USER:', process.env.EMAIL_USER);
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS);
+
 });
