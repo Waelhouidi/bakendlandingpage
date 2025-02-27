@@ -4,43 +4,9 @@ const Subscriber = require('../models/Subscriber.model');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Configure Nodemailer
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', // or your email service
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
-// Subscribe route (mounted at '/', adjust as needed)
-router.post('/', async (req, res) => {
-  try {
-    const { email } = req.body;
 
-    // Save to database
-    const newSubscriber = new Subscriber({ email });
-    await newSubscriber.save();
 
-    // Send welcome email
-    const welcomeMailOptions = {
-      from: 'houidiwael68@gmail.com',
-      to: 'waelhwidi0@gmail.com',
-      subject: 'Welcome to Our Blog!',
-      html: `<h1>Thank you for subscribing!</h1>
-             <p>You've successfully subscribed to our blog. Stay tuned for updates!</p>`,
-    };
-
-    await transporter.sendMail(welcomeMailOptions);
-
-    res.status(201).json({ message: 'Subscription successful' });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(409).json({ message: 'Email already subscribed' });
-    }
-    res.status(500).json({ message: 'Subscription failed' });
-  }
-});
 
 // Notify subscribers about a new blog post
 router.post('/notify', async (req, res) => {

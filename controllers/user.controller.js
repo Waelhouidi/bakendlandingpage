@@ -1,30 +1,58 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('../routes/subscribe.routes');
+const nodemailer = require('nodemailer');
 
-// Register user
+
+
+
+
+
+// 📌 Configurer le transporteur Nodemailer
+
+
+
+// 📌 Inscription d'un utilisateur
 exports.register = async (req, res) => {
+    const characters = "kjshgchjgcsdncezhbyezbgbjzkhcjgsngxhfnxv5ifu";
+    let activationCode = "";
+    for (let i = 0; i < 25; i++) {
+        activationCode += characters[Math.floor(Math.random() * characters.length)];
+    }
+
     const { username, email, password, role } = req.body;
 
     try {
-        // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "Email already in use" });
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create and save the new user with the role
-        const newUser = new User({ username, email, password: hashedPassword, role: role || 'user' });
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
+            activationCode,
+            role: role || 'user',
+        });
+
         await newUser.save();
 
-        res.status(201).json({ message: "User created successfully" });
+       
+        return res.status(201).json({ message: "User created successfully. Check your email to activate your account." });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
+
+
+
+
+
 
 // Login user
 exports.login = async (req, res) => {
@@ -37,6 +65,9 @@ exports.login = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Check if the user's email is verified
+      
+
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -44,17 +75,26 @@ exports.login = async (req, res) => {
         }
 
         // Generate a JWT token, including the user's role
-        const token = jwt.sign({ id: user._id, role: user.role }, '123456789', { expiresIn: '1h' });
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET || "default_secret_key",
+            { expiresIn: "1h" }
+        );
 
-        // Store user information in the session
-        req.session.user = {
-            id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-        };
+        // Store user information in the session (optional)
+        if (req.session) {
+            req.session.user = {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+            };
+        }
 
-        res.status(200).json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
+        res.status(200).json({
+            token,
+            user: { id: user._id, username: user.username, email: user.email, role: user.role },
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
